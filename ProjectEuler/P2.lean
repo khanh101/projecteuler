@@ -12,6 +12,10 @@ namespace P2
 
   #eval let (_, x) := fibonacci.take 10; x -- should be 10 fibonacci numbers
 
+  def run (_: Unit): String :=
+    let s := fibonacci
+    let s := s.filter ((λ (x: Nat) => x % 2 == 0)) -- keep even numbers only
+    let rec loop (s: Iterator α Nat) (a: Nat) :=
 
 
 end P2

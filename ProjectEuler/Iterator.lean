@@ -3,6 +3,11 @@ namespace Tools
     _state: α
     _next: α → Option (α × β)
 
+  def Iterator.next (i: Iterator α β): Option ((Iterator α β) × β) :=
+    match i._next i._state with
+      | some (s1, b) => some ((Iterator.mk s1 i._next), b)
+      | none => none
+
   partial def Iterator.take (i: Iterator α β) (n: Nat): (Option (Iterator α β)) × Array β :=
     let rec loop (i: Iterator α β) (n: Nat) (a: Array β): (Option (Iterator α β)) × Array β :=
       match n with
@@ -42,6 +47,18 @@ namespace Tools
           loop (Iterator.mk s1 i._next) f a
         | none => a
     loop i f a
+
+  -- keep reducing until condition is met
+  partial def Iterator.reduce_with_cond (i: Iterator α β) (f: γ → β → γ) (a: γ) (stop_cond: Nat → γ → β → Bool): γ :=
+    let rec loop (i: Iterator α β) (f: γ → β → γ) (a: γ) (n: Nat): γ :=
+      match i._next i._state with
+        | some (s1, b) =>
+          let a := f a b
+          if (stop_cond n a b)
+            then a
+            else loop (Iterator.mk s1 i._next) f a (n+1)
+        | none => a
+    loop i f a 1
 
   partial def Iterator.flat_map (i: Iterator α β) (f: β → Iterator γ δ): Iterator ((Iterator α β) × Option (Iterator γ δ)) δ :=
     let state_type := (Iterator α β) × Option (Iterator γ δ)

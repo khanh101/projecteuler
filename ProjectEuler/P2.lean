@@ -12,20 +12,19 @@ namespace P2
         | none => none
     Iterator.mk i.state next
 
+  -- TODO cannot prove termination for now
   def Iterator.filter (i: Iterator α β) (f: β → Bool): Iterator α β :=
-    let next (s: α): Option (α × β) :=
-      let rec loop (s: α): Option (α × β) :=
-        match i.next s with
-          | some (s1, b) =>
-            if (f b)
-              then (s1, b)
-              else loop s1
-          | none => none
-      decreasing_by all_goals sorry
-      loop s
-    Iterator.mk i.state next
+    let rec loop (s: α): Option (α × β) :=
+      match i.next s with
+        | some (s1, b) =>
+          if (f b)
+            then (s1, b)
+            else loop s1
+        | none => none
+    decreasing_by all_goals sorry
+    Iterator.mk i.state loop
 
-
+  -- TODO implement reduce, flatMap
 
 
   def fibonacci: Iterator (Nat × Nat) Nat :=

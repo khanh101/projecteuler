@@ -3,6 +3,9 @@ structure Iterator (α: Type)(β: Type) where
   _next: α → Option (α × β)
   _state: α
 
+def natural: Iterator Nat Nat :=
+  {_next := (λ (s: Nat) => some (s+1, s)), _state := 0}
+
 def make_iterator (next: α → Option (α × β)) (state: α): Iterator α β :=
   {_next := next, _state := state}
 

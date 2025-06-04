@@ -1,5 +1,3 @@
-import ProjectEuler.Iter
-
 namespace P2
   structure Iterator (α: Type) (β: Type) where
     state: α

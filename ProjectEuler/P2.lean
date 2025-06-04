@@ -1,5 +1,6 @@
 import ProjectEuler.Iterator
 import ProjectEuler.Fibonacci
+
 namespace P2
 
   open Iterator

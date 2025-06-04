@@ -170,11 +170,13 @@ partial def Iterator.flat_map (i: Iterator α β) (f: β → Iterator γ δ): It
     #check a.prepend [9, 8, 7]
     #eval (a.prepend [9, 8, 7]).array
 
-    #eval (natural.take_atmost 20).array
-
     #eval (a.drop_atmost 0).array
     #eval (a.drop_atmost 2).array
     #eval (a.drop_atmost 5).array
+
+
+    #eval ((natural.drop_atmost 20).take_atmost 10).array
+
 
   end test
 

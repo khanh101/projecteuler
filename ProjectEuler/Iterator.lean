@@ -18,42 +18,53 @@ def make_iterator_from_list (l: List α): Iterator (List α) α :=
 
   {_next := loop, _state := l}
 
-partial def Iterator.take_all (i: Iterator α β): Array β :=
-  let rec loop (i: Iterator α β) (bs: Array β): Array β :=
-    match i._next i._state with
-      | some (s1, b) =>
-        let bs := bs.push b
-        loop {_next := i._next, _state := s1} bs
-      | none => bs
-
-  loop i #[]
 
 def Iterator.next (i: Iterator α β): Option ((Iterator α β) × β) :=
   match i._next i._state with
     | some (s1, b) => some ({_next := i._next, _state := s1}, b)
     | none => none
 
+def Iterator.prepend (i: Iterator α β) (l: List β): Iterator ((Iterator α β) × (List β)) β :=
+  let state_type := (Iterator α β) × (List β)
+  let state: state_type := (i, l)
+  let next (s: state_type): Option (state_type × β) :=
+    let (i, l) := s
+    match l with
+      | [] =>
+        match i.next with
+          | some (i1, b) => some ((i1, l), b)
+          | none => none
+      | head :: l => some ((i, l), head)
+
+  {_next := next, _state := state}
+
+partial def Iterator.take_all (i: Iterator α β): Array β :=
+  let rec loop (i: Iterator α β) (bs: Array β): Array β :=
+    match i.next with
+      | some (i1, b) => loop i1 (bs.push b)
+      | none => bs
+
+  loop i #[]
+
+
 partial def Iterator.take (i: Iterator α β) (n: Nat): (Option (Iterator α β)) × Array β :=
   let rec loop (i: Iterator α β) (n: Nat) (a: Array β): (Option (Iterator α β)) × Array β :=
     match n with
       | 0 => (i, a)
       | _ =>
-        match i._next i._state with
-          | some (s1, b) =>
-            let a := a.push b
-            loop {_next := i._next, _state := s1} (n-1) a
-          | none =>
-            (none, a)
+        match i.next with
+          | some (i1, b) => loop i1 (n-1) (a.push b)
+          | none => (none, a)
   loop i n #[]
 
 partial def Iterator.last (i: Iterator α β): Option β :=
-  match i._next i._state with
-    | some (s1, b) =>
-        let rec loop (i: Iterator α β) (b: β): β :=
-          match i._next i._state with
-            | some (s1, b) => loop {_next := i._next, _state := s1} b
-            | none => b
-        loop {_next := i._next, _state := s1} b
+  match i.next with
+    | some (i1, b) =>
+      let rec loop (i1: Iterator α β) (b: β): β :=
+        match i1.next with
+          | some (i2, b2) => loop i2 b2
+          | none => b
+      loop i1 b
     | none => none
 
 partial def Iterator.drop (i: Iterator α β) (n: Nat): Option (Iterator α β) :=
@@ -80,21 +91,20 @@ partial def Iterator.filter (i: Iterator α β) (f: β → Bool): Iterator α β
   {_next := loop, _state := i._state}
 
 partial def Iterator.fold (i: Iterator α β) (f: γ → β → Option γ) (a: γ): Iterator (γ × Iterator α β) γ :=
-  let state := γ × Iterator α β
-  let rec loop (s: state): Option (state × γ) :=
+  let state_type := γ × Iterator α β
+  let rec loop (s: state_type): Option (state_type × γ) :=
     let (a, i) := s
-    match i._next i._state with
-      | some (s1, b) =>
-        let a := f a b
-        match a with
-          | some a => some ((a, {_next := i._next, _state := s1}), a)
+    match i.next with
+      | some (i1, b) =>
+        match f a b with
+          | some a => some ((a, i1), a)
           | none => none
       | none => none
 
   {_next := loop, _state := (a, i)}
 
 partial def Iterator.reduce (i: Iterator α β) (f: γ → β → Option γ) (a: γ): γ :=
-  match (i.fold f a).last with
+    match (i.fold f a).last with
     | some a => a
     | none => a
 
@@ -128,8 +138,8 @@ partial def Iterator.flat_map (i: Iterator α β) (f: β → Iterator γ δ): It
     #eval let (_, x) := a.take 2; x
     #eval let (_, x) := a.take 5; x
 
-    #check a.map ((λ x => x+1): Nat → Nat)
-    #eval (a.map ((λ x => x+1): Nat → Nat)).take_all
+    #check a.map ((λ x => x*2): Nat → Nat)
+    #eval (a.map ((λ x => x*2): Nat → Nat)).take_all
 
     #check a.filter ((λ x => x % 2 == 0))
     #eval (a.filter ((λ x => x % 2 == 0))).take_all

@@ -1,10 +1,12 @@
 import ProjectEuler.P1
 import ProjectEuler.P2
+import ProjectEuler.P3
 
 def run (n: Nat): String :=
   match n with
     | 1 => P1.run ()
     | 2 => P2.run ()
+    | 3 => P3.run ()
     | _ => s!"no solution for problem {n}."
 
 

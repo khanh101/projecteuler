@@ -1,7 +1,7 @@
-
+import ProjectEuler.Iterator
 
 namespace P2
-
+  open Tools
 
 
   def fibonacci: Iterator (Nat × Nat) Nat :=
@@ -9,7 +9,5 @@ namespace P2
       let (a, b) := s
       some ((b, a + b), a)
     ): Nat × Nat → Option ((Nat × Nat) × Nat))
-
-  def run (_: Unit): String :=
 
 end P2

@@ -1,3 +1,5 @@
+import ProjectEuler.Output
+
 import ProjectEuler.Iterator
 import ProjectEuler.Fibonacci
 
@@ -7,7 +9,7 @@ namespace P2
   open Fibonacci
 
 
-  partial def run (_: Unit): String :=
+  partial def run (_: Unit): Output :=
     let s := fibonacci
     let s := s.filter ((λ (x: Nat) => x % 2 == 0)) -- keep even numbers only
     let rec loop {α} (s: Iterator α Nat) (sum: Nat): Nat :=
@@ -20,6 +22,7 @@ namespace P2
             else
               sum
         | none => 0 -- unreachable
-    (loop s 0).repr
+
+    Output.isNat (loop s 0)
 
 end P2

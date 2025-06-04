@@ -1,3 +1,5 @@
+import ProjectEuler.Output
+
 import ProjectEuler.Iterator
 import ProjectEuler.Prime
 
@@ -7,7 +9,7 @@ namespace P3
   open Prime
 
 
-  partial def run (_: Unit): String :=
+  partial def run (_: Unit): Output :=
     let ps := prime
     let n := 600851475143
 
@@ -17,6 +19,5 @@ namespace P3
         if n % p == 0 then some p -- previous largest factor
         else some largest_factor
 
-    (ps.reduce reduce 0).repr
-
+    Output.isNat (ps.reduce reduce 0)
 end P3

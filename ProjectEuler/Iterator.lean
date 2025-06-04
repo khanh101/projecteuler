@@ -18,6 +18,9 @@ def make_iterator_from_list (l: List α): Iterator (List α) α :=
 
   {_next := loop, _state := l}
 
+def replicate (b: β): Iterator β β :=
+  let next (b: β): Option (β × β) := (b, b)
+  {_next := next, _state := b}
 
 def Iterator.next (i: Iterator α β): Option ((Iterator α β) × β) :=
   match i._next i._state with
@@ -79,6 +82,8 @@ partial def Iterator.take_atmost (i: Iterator α β) (n: Nat): Iterator ((Iterat
         | none => none
   {_next := next, _state := state}
 
+
+
 def Iterator.map (i: Iterator α β) (f: β → γ): Iterator α γ :=
   let next (s: α): Option (α × γ) :=
     match i._next s with
@@ -135,6 +140,11 @@ partial def Iterator.flat_map (i: Iterator α β) (f: β → Iterator γ δ): It
 
 
   namespace test
+    #eval ((natural.drop_atmost 20).take_atmost 10).array
+
+    #eval ((replicate 5).take_atmost 10).array
+
+
     def a := make_iterator_from_list [1, 2, 3, 4]
 
     #check a
@@ -143,6 +153,19 @@ partial def Iterator.flat_map (i: Iterator α β) (f: β → Iterator γ δ): It
     #eval (a.take_atmost 0).array
     #eval (a.take_atmost 2).array
     #eval (a.take_atmost 5).array
+
+
+    #check a.last
+    #eval a.last
+
+    #check a.prepend [9, 8, 7]
+    #eval (a.prepend [9, 8, 7]).array
+
+    #eval (a.drop_atmost 0).array
+    #eval (a.drop_atmost 2).array
+    #eval (a.drop_atmost 5).array
+
+
 
     #check a.map ((λ x => x*2): Nat → Nat)
     #eval (a.map ((λ x => x*2): Nat → Nat)).array
@@ -161,21 +184,8 @@ partial def Iterator.flat_map (i: Iterator α β) (f: β → Iterator γ δ): It
     #check a.fold join ""
     #eval (a.fold join "").array
 
-    #check a.flat_map ((λ (x: Nat) => make_iterator_from_list (List.replicate x x)))
-    #eval (a.flat_map ((λ (x: Nat) => make_iterator_from_list (List.replicate x x)))).array
-
-    #check a.last
-    #eval a.last
-
-    #check a.prepend [9, 8, 7]
-    #eval (a.prepend [9, 8, 7]).array
-
-    #eval (a.drop_atmost 0).array
-    #eval (a.drop_atmost 2).array
-    #eval (a.drop_atmost 5).array
-
-
-    #eval ((natural.drop_atmost 20).take_atmost 10).array
+    #check a.flat_map (λ (x: Nat) => (replicate x).take_atmost x)
+    #eval (a.flat_map (λ (x: Nat) => (replicate x).take_atmost x)).array
 
 
   end test

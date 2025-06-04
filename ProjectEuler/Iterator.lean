@@ -72,4 +72,22 @@ partial def Iterator.toArray (i: Iterator α β): Array β :=
 
 
 
-#eval (make_iterator_from_list [1, 2, 3, 4]).toArray
+namespace test
+  def a := make_iterator_from_list [1, 2, 3, 4]
+
+  #check a
+  #eval a.toArray
+
+  #check a.map ((λ x => x+1): Nat → Nat)
+  #eval (a.map ((λ x => x+1): Nat → Nat)).toArray
+
+  #check a.filter ((λ x => x % 2 == 0))
+  #eval (a.filter ((λ x => x % 2 == 0))).toArray
+
+  #check a.reduce ((λ (s: String)(x: Nat) => s ++ x.repr ++ ",")) ""
+  #eval a.reduce ((λ (s: String)(x: Nat) => s ++ x.repr ++ ",")) ""
+
+  #check a.flat_map ((λ (x: Nat) => make_iterator_from_list (List.replicate x x)))
+  #eval (a.flat_map ((λ (x: Nat) => make_iterator_from_list (List.replicate x x)))).toArray
+
+end test

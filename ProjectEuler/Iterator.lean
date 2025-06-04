@@ -46,17 +46,6 @@ partial def Iterator.take_all (i: Iterator α β): Array β :=
 
   loop i #[]
 
-
-partial def Iterator.take (i: Iterator α β) (n: Nat): (Option (Iterator α β)) × Array β :=
-  let rec loop (i: Iterator α β) (n: Nat) (a: Array β): (Option (Iterator α β)) × Array β :=
-    match n with
-      | 0 => (i, a)
-      | _ =>
-        match i.next with
-          | some (i1, b) => loop i1 (n-1) (a.push b)
-          | none => (none, a)
-  loop i n #[]
-
 partial def Iterator.last (i: Iterator α β): Option β :=
   match i.next with
     | some (i1, b) =>
@@ -72,6 +61,17 @@ partial def Iterator.drop (i: Iterator α β) (n: Nat): Option (Iterator α β) 
     match i.next with
       | some (i , _) => i.drop (n-1)
       | none => none
+
+partial def Iterator.take (i: Iterator α β) (n: Nat): Iterator ((Iterator α β) × Nat) β :=
+  let state_type := (Iterator α β) × Nat
+  let state := (i, n)
+  let next (s: state_type): Option (state_type × β) :=
+    let (i, n) := s
+    if n == 0 then none else
+      match i.next with
+        | some (i1, b) => some ((i1, n-1), b)
+        | none => none
+  {_next := next, _state := state}
 
 def Iterator.map (i: Iterator α β) (f: β → γ): Iterator α γ :=
   let next (s: α): Option (α × γ) :=
@@ -134,9 +134,9 @@ partial def Iterator.flat_map (i: Iterator α β) (f: β → Iterator γ δ): It
     #check a
     #eval a.take_all
 
-    #eval let (_, x) := a.take 0; x
-    #eval let (_, x) := a.take 2; x
-    #eval let (_, x) := a.take 5; x
+    #eval (a.take 0).take_all
+    #eval (a.take 2).take_all
+    #eval (a.take 5).take_all
 
     #check a.map ((λ x => x*2): Nat → Nat)
     #eval (a.map ((λ x => x*2): Nat → Nat)).take_all
@@ -164,7 +164,7 @@ partial def Iterator.flat_map (i: Iterator α β) (f: β → Iterator γ δ): It
     #check a.prepend [9, 8, 7]
     #eval (a.prepend [9, 8, 7]).take_all
 
-    #eval let (_, x) := natural.take 20; x
+    #eval (natural.take 20).take_all
 
   end test
 

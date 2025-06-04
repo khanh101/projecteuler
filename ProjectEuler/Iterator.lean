@@ -1,5 +1,5 @@
 namespace Iterator
-structure Iterator (α: Type) (β: Type) where
+structure Iterator (α: Type)(β: Type) where
   _next: α → Option (α × β)
   _state: α
 
@@ -21,6 +21,16 @@ partial def Iterator.take (i: Iterator α β) (n: Nat): (Option (Iterator α β)
             (none, a)
   loop i n #[]
 
+partial def Iterator.last (i: Iterator α β): Option β :=
+  match i._next i._state with
+    | some (s1, b) =>
+        let rec loop (i: Iterator α β) (b: β): β :=
+          match i._next i._state with
+            | some (s1, b) => loop {_next := i._next, _state := s1} b
+            | none => b
+        loop {_next := i._next, _state := s1} b
+    | none => none
+
 def Iterator.map (i: Iterator α β) (f: β → γ): Iterator α γ :=
   let next (s: α): Option (α × γ) :=
     match i._next s with
@@ -38,29 +48,21 @@ partial def Iterator.filter (i: Iterator α β) (f: β → Bool): Iterator α β
       | none => none
   {_next := loop, _state := i._state}
 
-partial def Iterator.fold (i: Iterator α β) (f: γ → β → γ) (a: γ): Iterator (γ × Iterator α β) γ :=
+partial def Iterator.fold (i: Iterator α β) (f: γ → β → Option γ) (a: γ): Iterator (γ × Iterator α β) γ :=
   let state := γ × Iterator α β
   let rec loop (s: state): Option (state × γ) :=
     let (a, i) := s
     match i._next i._state with
       | some (s1, b) =>
         let a := f a b
-        some ((a, {_next := i._next, _state := s1}), a)
+        match a with
+          | some a => some ((a, {_next := i._next, _state := s1}), a)
+          | none => none
       | none => none
 
   {_next := loop, _state := (a, i)}
 
-partial def Iterator.last (i: Iterator α β): Option β :=
-  match i._next i._state with
-    | some (s1, b) =>
-        let rec loop (i: Iterator α β) (b: β): β :=
-          match i._next i._state with
-            | some (s1, b) => loop {_next := i._next, _state := s1} b
-            | none => b
-        loop {_next := i._next, _state := s1} b
-    | none => none
-
-partial def Iterator.reduce (i: Iterator α β) (f: γ → β → γ) (a: γ): γ :=
+partial def Iterator.reduce (i: Iterator α β) (f: γ → β → Option γ) (a: γ): γ :=
   match (i.fold f a).last with
     | some a => a
     | none => a
@@ -84,7 +86,7 @@ partial def Iterator.flat_map (i: Iterator α β) (f: β → Iterator γ δ): It
           | none => none
   {_next := loop, _state := (i, none)}
 
-def make_iterator_from_list (l: List α): Iterator (List α) α :=
+def fromList (l: List α): Iterator (List α) α :=
   let state_type := List α
   let rec loop (s: state_type): Option (state_type × α) :=
     match s with
@@ -104,7 +106,7 @@ partial def Iterator.toArray (i: Iterator α β): Array β :=
   loop i #[]
 
   namespace test
-    def a := make_iterator_from_list [1, 2, 3, 4]
+    def a := fromList [1, 2, 3, 4]
 
     #check a
     #eval a.toArray
@@ -119,14 +121,19 @@ partial def Iterator.toArray (i: Iterator α β): Array β :=
     #check a.filter ((λ x => x % 2 == 0))
     #eval (a.filter ((λ x => x % 2 == 0))).toArray
 
-    #check a.reduce ((λ (s: String)(x: Nat) => s ++ x.repr ++ ",")) ""
-    #eval a.reduce ((λ (s: String)(x: Nat) => s ++ x.repr ++ ",")) ""
+    -- join but stop if ≥ 4
+    def join (s: String) (x: Nat): Option String :=
+      if x ≥ 4 then none else
+        s ++ x.repr ++ ","
 
-    #check a.fold ((λ (s: String)(x: Nat) => s ++ x.repr ++ ",")) ""
-    #eval (a.fold ((λ (s: String)(x: Nat) => s ++ x.repr ++ ",")) "").toArray
+    #check a.reduce join ""
+    #eval a.reduce join ""
 
-    #check a.flat_map ((λ (x: Nat) => make_iterator_from_list (List.replicate x x)))
-    #eval (a.flat_map ((λ (x: Nat) => make_iterator_from_list (List.replicate x x)))).toArray
+    #check a.fold join ""
+    #eval (a.fold join "").toArray
+
+    #check a.flat_map ((λ (x: Nat) => fromList (List.replicate x x)))
+    #eval (a.flat_map ((λ (x: Nat) => fromList (List.replicate x x)))).toArray
 
     #check a.last
     #eval a.last

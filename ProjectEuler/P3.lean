@@ -30,7 +30,7 @@ namespace P3
 
     prime_ge3.prepend [2, 3]
 
-  #eval (prime.take 10).take_all -- should be 10 primes
+  #eval (prime.take_atmost 10).array -- should be 10 fibonacci numbers
 
   partial def run (_: Unit): String :=
     let ps := prime

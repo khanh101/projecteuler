@@ -11,7 +11,7 @@ namespace P2
     let state: Nat × Nat := (1, 2)
     make_iterator next state
 
-  #eval (fibonacci.take 10).take_all -- should be 10 fibonacci numbers
+  #eval (fibonacci.take_atmost 10).array -- should be 10 fibonacci numbers
 
   partial def run (_: Unit): String :=
     let s := fibonacci

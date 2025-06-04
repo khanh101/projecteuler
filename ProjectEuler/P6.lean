@@ -4,8 +4,7 @@ namespace P6
 
   open Iterator
 
-  def x := let (_, x) := natural.take 101; x[1:].array
-  #eval x
+  #eval ((natural.drop 1).take 100).take_all
 
 
   partial def run (_: Unit): String :=

@@ -38,7 +38,7 @@ def Iterator.prepend (i: Iterator α β) (l: List β): Iterator ((Iterator α β
 
   {_next := next, _state := state}
 
-partial def Iterator.take_all (i: Iterator α β): Array β :=
+partial def Iterator.array (i: Iterator α β): Array β :=
   let rec loop (i: Iterator α β) (bs: Array β): Array β :=
     match i.next with
       | some (i1, b) => loop i1 (bs.push b)
@@ -62,7 +62,13 @@ partial def Iterator.drop (i: Iterator α β) (n: Nat): Option (Iterator α β) 
       | some (i , _) => i.drop (n-1)
       | none => none
 
-partial def Iterator.take (i: Iterator α β) (n: Nat): Iterator ((Iterator α β) × Nat) β :=
+partial def Iterator.drop_atmost (i: Iterator α β) (n: Nat): Iterator α β :=
+  if n == 0 then i else
+    match i.next with
+      | some (i , _) => i.drop_atmost (n-1)
+      | none => i
+
+partial def Iterator.take_atmost (i: Iterator α β) (n: Nat): Iterator ((Iterator α β) × Nat) β :=
   let state_type := (Iterator α β) × Nat
   let state := (i, n)
   let next (s: state_type): Option (state_type × β) :=
@@ -132,17 +138,17 @@ partial def Iterator.flat_map (i: Iterator α β) (f: β → Iterator γ δ): It
     def a := make_iterator_from_list [1, 2, 3, 4]
 
     #check a
-    #eval a.take_all
+    #eval a.array
 
-    #eval (a.take 0).take_all
-    #eval (a.take 2).take_all
-    #eval (a.take 5).take_all
+    #eval (a.take_atmost 0).array
+    #eval (a.take_atmost 2).array
+    #eval (a.take_atmost 5).array
 
     #check a.map ((λ x => x*2): Nat → Nat)
-    #eval (a.map ((λ x => x*2): Nat → Nat)).take_all
+    #eval (a.map ((λ x => x*2): Nat → Nat)).array
 
     #check a.filter ((λ x => x % 2 == 0))
-    #eval (a.filter ((λ x => x % 2 == 0))).take_all
+    #eval (a.filter ((λ x => x % 2 == 0))).array
 
     -- join but stop if ≥ 4
     def join (s: String) (x: Nat): Option String :=
@@ -153,18 +159,18 @@ partial def Iterator.flat_map (i: Iterator α β) (f: β → Iterator γ δ): It
     #eval a.reduce join ""
 
     #check a.fold join ""
-    #eval (a.fold join "").take_all
+    #eval (a.fold join "").array
 
     #check a.flat_map ((λ (x: Nat) => make_iterator_from_list (List.replicate x x)))
-    #eval (a.flat_map ((λ (x: Nat) => make_iterator_from_list (List.replicate x x)))).take_all
+    #eval (a.flat_map ((λ (x: Nat) => make_iterator_from_list (List.replicate x x)))).array
 
     #check a.last
     #eval a.last
 
     #check a.prepend [9, 8, 7]
-    #eval (a.prepend [9, 8, 7]).take_all
+    #eval (a.prepend [9, 8, 7]).array
 
-    #eval (natural.take 20).take_all
+    #eval (natural.take_atmost 20).array
 
   end test
 

@@ -151,6 +151,8 @@ partial def Iterator.flat_map (i: Iterator α β) (f: β → Iterator γ δ): It
     #check a.last
     #eval a.last
 
+    #eval let (_, x) := natural.take 20; x
+
   end test
 
 end Iterator

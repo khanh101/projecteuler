@@ -2,7 +2,7 @@ import ProjectEuler.P1
 
 def run (n: Nat): String :=
   match n with
-    | 1 => P1.run
+    | 1 => P1.run ()
     | _ => s!"no solution for problem {n}."
 
 

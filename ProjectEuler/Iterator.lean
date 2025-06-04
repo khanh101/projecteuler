@@ -172,6 +172,10 @@ partial def Iterator.flat_map (i: Iterator α β) (f: β → Iterator γ δ): It
 
     #eval (natural.take_atmost 20).array
 
+    #eval (a.drop_atmost 0).array
+    #eval (a.drop_atmost 2).array
+    #eval (a.drop_atmost 5).array
+
   end test
 
 end Iterator

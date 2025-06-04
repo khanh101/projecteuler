@@ -1,4 +1,4 @@
-namespace Tools
+namespace Iterator
 structure Iterator (α: Type) (β: Type) where
   _next: α → Option (α × β)
   _state: α
@@ -133,4 +133,4 @@ partial def Iterator.toArray (i: Iterator α β): Array β :=
 
   end test
 
-end Tools
+end Iterator

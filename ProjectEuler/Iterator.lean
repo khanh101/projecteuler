@@ -140,7 +140,7 @@ partial def Iterator.flat_map (i: Iterator α β) (f: β → Iterator γ δ): It
 
 
   namespace test
-    #eval ((natural.drop_atmost 20).take_atmost 10).array
+    #eval ((natural.filter (λ (x: Nat) => x % 2 == 0)).take_atmost 10).array
 
     #eval ((replicate 5).take_atmost 10).array
 
@@ -186,6 +186,7 @@ partial def Iterator.flat_map (i: Iterator α β) (f: β → Iterator γ δ): It
 
     #check a.flat_map (λ (x: Nat) => (replicate x).take_atmost x)
     #eval (a.flat_map (λ (x: Nat) => (replicate x).take_atmost x)).array
+
 
 
   end test

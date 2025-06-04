@@ -3,7 +3,6 @@ import ProjectEuler.Iterator
 namespace P2
   open Iterator
 
-
   def fibonacci: Iterator (Nat × Nat) Nat := {
     _next := ((λ (s: Nat × Nat) =>
       let (a, b) := s

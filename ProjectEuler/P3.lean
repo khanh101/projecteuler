@@ -39,8 +39,8 @@ namespace P3
     let reduce (largest_factor: Nat) (p: Nat): Option Nat :=
       if p * p > n then none -- stop iteration here
         else
-        if n % p == 0 then some largest_factor -- previous largest factor
-        else some p
+        if n % p == 0 then some p -- previous largest factor
+        else some largest_factor
 
     (ps.reduce reduce 0).repr
 

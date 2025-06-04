@@ -3,6 +3,28 @@ structure Iterator (α: Type)(β: Type) where
   _next: α → Option (α × β)
   _state: α
 
+def make_iterator (next: α → Option (α × β)) (state: α): Iterator α β :=
+  {_next := next, _state := state}
+
+def make_iterator_from_list (l: List α): Iterator (List α) α :=
+  let state_type := List α
+  let rec loop (s: state_type): Option (state_type × α) :=
+    match s with
+      | [] => none
+      | head :: tail => some (tail, head)
+
+  {_next := loop, _state := l}
+
+partial def Iterator.toArray (i: Iterator α β): Array β :=
+  let rec loop (i: Iterator α β) (bs: Array β): Array β :=
+    match i._next i._state with
+      | some (s1, b) =>
+        let bs := bs.push b
+        loop {_next := i._next, _state := s1} bs
+      | none => bs
+
+  loop i #[]
+
 def Iterator.next (i: Iterator α β): Option ((Iterator α β) × β) :=
   match i._next i._state with
     | some (s1, b) => some ({_next := i._next, _state := s1}, b)
@@ -86,27 +108,9 @@ partial def Iterator.flat_map (i: Iterator α β) (f: β → Iterator γ δ): It
           | none => none
   {_next := loop, _state := (i, none)}
 
-def fromList (l: List α): Iterator (List α) α :=
-  let state_type := List α
-  let rec loop (s: state_type): Option (state_type × α) :=
-    match s with
-      | [] => none
-      | head :: tail => some (tail, head)
-
-  {_next := loop, _state := l}
-
-partial def Iterator.toArray (i: Iterator α β): Array β :=
-  let rec loop (i: Iterator α β) (bs: Array β): Array β :=
-    match i._next i._state with
-      | some (s1, b) =>
-        let bs := bs.push b
-        loop {_next := i._next, _state := s1} bs
-      | none => bs
-
-  loop i #[]
 
   namespace test
-    def a := fromList [1, 2, 3, 4]
+    def a := make_iterator_from_list [1, 2, 3, 4]
 
     #check a
     #eval a.toArray
@@ -132,8 +136,8 @@ partial def Iterator.toArray (i: Iterator α β): Array β :=
     #check a.fold join ""
     #eval (a.fold join "").toArray
 
-    #check a.flat_map ((λ (x: Nat) => fromList (List.replicate x x)))
-    #eval (a.flat_map ((λ (x: Nat) => fromList (List.replicate x x)))).toArray
+    #check a.flat_map ((λ (x: Nat) => make_iterator_from_list (List.replicate x x)))
+    #eval (a.flat_map ((λ (x: Nat) => make_iterator_from_list (List.replicate x x)))).toArray
 
     #check a.last
     #eval a.last

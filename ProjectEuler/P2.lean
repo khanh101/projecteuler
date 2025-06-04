@@ -3,13 +3,13 @@ import ProjectEuler.Iterator
 namespace P2
   open Iterator
 
-  def fibonacci: Iterator (Nat × Nat) Nat := {
-    _next := ((λ (s: Nat × Nat) =>
-      let (a, b) := s
+  def fibonacci: Iterator (Nat × Nat) Nat :=
+    let next (pair: Nat × Nat): Option ((Nat × Nat) × Nat) :=
+      let (a, b) := pair
       some ((b, a + b), a)
-    ): Nat × Nat → Option ((Nat × Nat) × Nat))
-    _state := (1, 2)
-  }
+
+    let state: Nat × Nat := (1, 2)
+    make_iterator next state
 
   #eval let (_, x) := fibonacci.take 10; x -- should be 10 fibonacci numbers
 

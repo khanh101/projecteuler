@@ -3,22 +3,15 @@ namespace Tools
     _state: α
     _next: α → Option (α × β)
 
-  def Iterator.next(i: Iterator α β): Option ((Iterator α β) × β) :=
-    match i._next i._state with
-      | some (s1, b) =>
-        some ((Iterator.mk s1 i._next), b)
-      | none => none
-
-
   partial def Iterator.take (i: Iterator α β) (n: Nat): (Option (Iterator α β)) × Array β :=
     let rec loop (i: Iterator α β) (n: Nat) (a: Array β): (Option (Iterator α β)) × Array β :=
       match n with
         | 0 => (i, a)
         | _ =>
-          match i.next with
-            | some (i, b) =>
+          match i._next i._state with
+            | some (s1, b) =>
               let a := a.push b
-              loop i (n-1) a
+              loop (Iterator.mk s1 i._next) (n-1) a
             | none =>
               (none, a)
     loop i n #[]

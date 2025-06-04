@@ -10,4 +10,6 @@ namespace P2
       some ((b, a + b), a)
     ): Nat × Nat → Option ((Nat × Nat) × Nat))
 
+  #eval fibonacci.take 2
+
 end P2

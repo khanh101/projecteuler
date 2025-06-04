@@ -15,7 +15,7 @@ def make_iterator_from_list (l: List α): Iterator (List α) α :=
 
   {_next := loop, _state := l}
 
-partial def Iterator.toArray (i: Iterator α β): Array β :=
+partial def Iterator.take_all (i: Iterator α β): Array β :=
   let rec loop (i: Iterator α β) (bs: Array β): Array β :=
     match i._next i._state with
       | some (s1, b) =>
@@ -52,6 +52,12 @@ partial def Iterator.last (i: Iterator α β): Option β :=
             | none => b
         loop {_next := i._next, _state := s1} b
     | none => none
+
+partial def Iterator.drop (i: Iterator α β) (n: Nat): Option (Iterator α β) :=
+  if n == 0 then i else
+    match i.next with
+      | some (i , _) => i.drop (n-1)
+      | none => none
 
 def Iterator.map (i: Iterator α β) (f: β → γ): Iterator α γ :=
   let next (s: α): Option (α × γ) :=
@@ -113,17 +119,17 @@ partial def Iterator.flat_map (i: Iterator α β) (f: β → Iterator γ δ): It
     def a := make_iterator_from_list [1, 2, 3, 4]
 
     #check a
-    #eval a.toArray
+    #eval a.take_all
 
     #eval let (_, x) := a.take 0; x
     #eval let (_, x) := a.take 2; x
     #eval let (_, x) := a.take 5; x
 
     #check a.map ((λ x => x+1): Nat → Nat)
-    #eval (a.map ((λ x => x+1): Nat → Nat)).toArray
+    #eval (a.map ((λ x => x+1): Nat → Nat)).take_all
 
     #check a.filter ((λ x => x % 2 == 0))
-    #eval (a.filter ((λ x => x % 2 == 0))).toArray
+    #eval (a.filter ((λ x => x % 2 == 0))).take_all
 
     -- join but stop if ≥ 4
     def join (s: String) (x: Nat): Option String :=
@@ -134,10 +140,10 @@ partial def Iterator.flat_map (i: Iterator α β) (f: β → Iterator γ δ): It
     #eval a.reduce join ""
 
     #check a.fold join ""
-    #eval (a.fold join "").toArray
+    #eval (a.fold join "").take_all
 
     #check a.flat_map ((λ (x: Nat) => make_iterator_from_list (List.replicate x x)))
-    #eval (a.flat_map ((λ (x: Nat) => make_iterator_from_list (List.replicate x x)))).toArray
+    #eval (a.flat_map ((λ (x: Nat) => make_iterator_from_list (List.replicate x x)))).take_all
 
     #check a.last
     #eval a.last

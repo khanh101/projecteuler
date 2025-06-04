@@ -48,18 +48,6 @@ namespace Tools
         | none => a
     loop i f a
 
-  -- keep reducing until condition is met
-  partial def Iterator.reduce_with_cond (i: Iterator α β) (f: γ → β → γ) (a: γ) (stop_cond: Nat → γ → β → Bool): γ :=
-    let rec loop (i: Iterator α β) (f: γ → β → γ) (a: γ) (n: Nat): γ :=
-      match i._next i._state with
-        | some (s1, b) =>
-          let a := f a b
-          if (stop_cond n a b)
-            then a
-            else loop (Iterator.mk s1 i._next) f a (n+1)
-        | none => a
-    loop i f a 1
-
   partial def Iterator.flat_map (i: Iterator α β) (f: β → Iterator γ δ): Iterator ((Iterator α β) × Option (Iterator γ δ)) δ :=
     let state_type := (Iterator α β) × Option (Iterator γ δ)
     let rec loop (s: state_type): Option (state_type × δ) :=

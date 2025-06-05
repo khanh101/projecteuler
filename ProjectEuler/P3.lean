@@ -19,5 +19,5 @@ namespace P3
         if n % p == 0 then some p -- previous largest factor
         else some largest_factor
 
-    Output.isNat (ps.reduce reduce 0)
+    Output.Nat (ps.reduce reduce 0)
 end P3

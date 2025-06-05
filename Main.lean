@@ -14,7 +14,7 @@ def run (n: Nat): Output :=
     | 3 => P3.run ()
     | 6 => P6.run ()
     | 7 => P7.run ()
-    | _ => Output.isStr s!"no solution for problem {n}."
+    | _ => Output.Str s!"no solution for problem {n}."
 
 
 def main (args : List String) : IO UInt32 := do

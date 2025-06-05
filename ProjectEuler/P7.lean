@@ -12,7 +12,7 @@ namespace P7
     let ps := prime
     let a: Array Nat := ((ps.drop_atmost 10000).take_atmost 1).array
     match a[0]? with
-      | some p => Output.isNat p
-      | none => Output.isStr "error"
+      | some p => Output.Nat p
+      | none => Output.Str "error"
 
 end P7

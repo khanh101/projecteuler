@@ -23,6 +23,6 @@ namespace P2
               sum
         | none => 0 -- unreachable
 
-    Output.isNat (loop s 0)
+    Output.Nat (loop s 0)
 
 end P2

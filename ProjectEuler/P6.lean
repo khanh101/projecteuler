@@ -15,5 +15,5 @@ namespace P6
       (make_iterator_from_list l).reduce (λ (x: Nat)(y: Nat) => some (x + y)) 0
     let square_of_sum := sum * sum
 
-    Output.isNat (Int.ofNat sum_of_squares - Int.ofNat square_of_sum).natAbs
+    Output.Nat (Int.ofNat sum_of_squares - Int.ofNat square_of_sum).natAbs
 end P6

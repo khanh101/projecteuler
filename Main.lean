@@ -6,6 +6,8 @@ import ProjectEuler.P6
 import ProjectEuler.P7
 import ProjectEuler.P9
 import ProjectEuler.P10
+import ProjectEuler.P11
+import ProjectEuler.P12
 
 
 
@@ -16,9 +18,10 @@ def run (n: Nat): Output :=
     | 3 => P3.run ()
     | 6 => P6.run ()
     | 7 => P7.run ()
-    -- TODO - check answers
     | 9 => P9.run ()
     | 10 => P10.run ()
+    | 11 => P11.run ()
+    | 12 => P12.run ()
     | _ => Output.Str s!"no solution for problem {n}."
 
 

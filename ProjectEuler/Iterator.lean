@@ -49,6 +49,13 @@ partial def Iterator.array (i: Iterator α β): Array β :=
 
   loop i #[]
 
+partial def Iterator.size (i: Iterator α β): Nat :=
+  let rec loop (i: Iterator α β) (n: Nat): Nat :=
+    match i.next with
+      | some (i1, _) => loop i1 (n+1)
+      | none => n
+  loop i 0
+
 partial def Iterator.last (i: Iterator α β): Option β :=
   match i.next with
     | some (i1, b) =>
@@ -140,6 +147,8 @@ partial def Iterator.flat_map (i: Iterator α β) (f: β → Iterator γ δ): It
 
 
   namespace test
+
+    #eval (natural.take_atmost 10).array
     #eval ((natural.filter (λ (x: Nat) => x % 2 == 0)).take_atmost 10).array
 
     #eval ((replicate 5).take_atmost 10).array

@@ -173,9 +173,9 @@ partial def Iterator.flat_map (i: Iterator α β) (f: β → Iterator γ δ): It
 
 
 
-    #eval (a.map ((λ x => x*2): Nat → Nat)).array
+    #eval (a.map (λ x => x*2)).array
 
-    #eval (a.filter ((λ x => x % 2 == 0): Nat → Bool)).array
+    #eval (a.filter (λ x => x % 2 == 0)).array
 
     def join (s: String) (x: Nat): Option String :=
       if x ≥ 4 then
@@ -188,8 +188,6 @@ partial def Iterator.flat_map (i: Iterator α β) (f: β → Iterator γ δ): It
     #eval (a.fold join "").array
 
     #eval (a.flat_map (λ x => (replicate x).take_atmost x)).array
-
-
 
   end test
 

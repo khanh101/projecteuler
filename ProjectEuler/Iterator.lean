@@ -156,7 +156,6 @@ partial def Iterator.flat_map (i: Iterator α β) (f: β → Iterator γ δ): It
 
     def a := make_iterator_from_list [1, 2, 3, 4]
 
-    #check a
     #eval a.array
 
     #eval (a.take_atmost 0).array
@@ -164,10 +163,8 @@ partial def Iterator.flat_map (i: Iterator α β) (f: β → Iterator γ δ): It
     #eval (a.take_atmost 5).array
 
 
-    #check a.last
     #eval a.last
 
-    #check a.prepend [9, 8, 7]
     #eval (a.prepend [9, 8, 7]).array
 
     #eval (a.drop_atmost 0).array
@@ -176,25 +173,21 @@ partial def Iterator.flat_map (i: Iterator α β) (f: β → Iterator γ δ): It
 
 
 
-    #check a.map ((λ x => x*2): Nat → Nat)
     #eval (a.map ((λ x => x*2): Nat → Nat)).array
 
-    #check a.filter ((λ x => x % 2 == 0))
-    #eval (a.filter ((λ x => x % 2 == 0))).array
+    #eval (a.filter ((λ x => x % 2 == 0): Nat → Bool)).array
 
-    -- join but stop if ≥ 4
     def join (s: String) (x: Nat): Option String :=
-      if x ≥ 4 then none else
+      if x ≥ 4 then
+        none -- stop joining if x ≥ 4
+      else
         s ++ x.repr ++ ","
 
-    #check a.reduce join ""
     #eval a.reduce join ""
 
-    #check a.fold join ""
     #eval (a.fold join "").array
 
-    #check a.flat_map (λ (x: Nat) => (replicate x).take_atmost x)
-    #eval (a.flat_map (λ (x: Nat) => (replicate x).take_atmost x)).array
+    #eval (a.flat_map (λ x => (replicate x).take_atmost x)).array
 
 
 

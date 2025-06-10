@@ -36,11 +36,17 @@ namespace P14
     
     loop (Array.replicate size 0) 0
 
-  #eval (get_collatz_chain_length 14).enum
+  #eval (get_collatz_chain_length 14).mapIdx (λ i v => (i, v))
 
   partial def run (_: Unit): Output :=
-    let a: Array Nat := get_collatz_chain_length 1000000
-    
-    Output.Nat 0
+    let a: Array Nat := (get_collatz_chain_length 1000000)
+    let a: Array (Nat × Nat) := a.mapIdx (λ i v => (i, v)) -- array of (index, value)
+    let iv: Nat × Nat := a.foldl ((λ miv iv =>
+      let (_, mv) := miv
+      let (_, v) := iv
+      if v > mv then iv else miv
+    ): (Nat × Nat) → (Nat × Nat) → (Nat × Nat)) (0, 0)
+    let (i, _) := iv
+    Output.Nat i
 
 end P14

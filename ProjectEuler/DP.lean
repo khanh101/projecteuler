@@ -16,4 +16,12 @@ namespace DP
 
     function_with_cache
 
+  partial def fibonacci_nocache (n: Nat): Nat :=
+    if n ≤ 1 then
+      n
+    else
+      (fibonacci_nocache (n-1)) + (fibonacci_nocache (n-2))
+  
+  #eval fibonacci_nocache 4
+
 end DP

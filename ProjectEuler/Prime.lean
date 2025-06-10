@@ -27,7 +27,7 @@ namespace Prime
 
       make_iterator next last_prime
 
-    prime_ge3.prepend [2, 3]
+    prime_ge3.insert [2, 3]
 
   #eval (prime.take_atmost 10).array -- should be 10 fibonacci numbers
 

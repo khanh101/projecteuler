@@ -27,7 +27,7 @@ def Iterator.next (i: Iterator α β): Option ((Iterator α β) × β) :=
     | some (s1, b) => some ({_next := i._next, _state := s1}, b)
     | none => none
 
-def Iterator.prepend (i: Iterator α β) (l: List β): Iterator ((Iterator α β) × (List β)) β :=
+def Iterator.insert (i: Iterator α β) (l: List β): Iterator ((Iterator α β) × (List β)) β :=
   let state_type := (Iterator α β) × (List β)
   let state: state_type := (i, l)
   let next (s: state_type): Option (state_type × β) :=
@@ -165,7 +165,7 @@ partial def Iterator.filter (i: Iterator α β) (f: β → Bool): Iterator α β
 
     #eval a.last
 
-    #eval (a.prepend [9, 8, 7]).array
+    #eval (a.insert [9, 8, 7]).array
 
     #eval (a.drop_atmost 0).array
     #eval (a.drop_atmost 2).array

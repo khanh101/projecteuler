@@ -36,11 +36,11 @@ namespace P14
     
     loop (Array.replicate size 0) 0
 
-  #eval get_collatz_chain_length 14
+  #eval (get_collatz_chain_length 14).enum
 
   partial def run (_: Unit): Output :=
     let a: Array Nat := get_collatz_chain_length 1000000
-    let a: Array (Nat × Nat) := a.map 
+    
     Output.Nat 0
 
 end P14

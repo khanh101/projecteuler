@@ -5,7 +5,7 @@ import ProjectEuler.Iterator
 namespace P14
   open Iterator
 
-  -- definition of collatz sequence
+  -- definition of collatz sequence - for reference
   def collatz (n: Nat): Iterator Nat Nat :=
     let next (n: Nat): Option (Nat × Nat) :=
       if n == 1 then none else

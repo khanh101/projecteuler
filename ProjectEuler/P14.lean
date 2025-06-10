@@ -18,6 +18,7 @@ namespace P14
     make_iterator next n
 
   -- get the collatz chain length of all starting values ≤ size
+  -- dynamic programming
   partial def get_collatz_chain_length (size: Nat): Array Nat :=
     let rec write (a: Array Nat) (n: Nat): (Array Nat) × Nat :=
       if n < a.size && a[n]! > 0 then

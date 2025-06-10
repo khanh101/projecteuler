@@ -18,25 +18,28 @@ namespace P14
     make_iterator next n
 
   -- TODO - cache this function
-  def get_collatz_chain_length (n: Nat): Nat :=
-    1 + (collatz n).size
+  -- def get_collatz_chain_length (n: Nat): Nat :=
+  --  1 + (collatz n).size
 
-  #eval get_collatz_chain_length 1
+  partial def get_collatz_chain_length (size: Nat): Array Nat :=
+    let rec write (a: Array Nat) (n: Nat): (Array Nat) × Nat :=
+      if n < a.size && a[n]! > 0 then (a, a[n]!) else
+        if n ≤ 1 then (a.set! n 1, 1) else
+        let m := if (n % 2) == 0 then n / 2 else 3 * n + 1
+        let (a, l) := write a m
+        (a, l+1)
+    let rec loop (a: Array Nat) (n: Nat): Array Nat :=
+      if n ≥ a.size then a else
+        let (a, _) := write a n
+        loop a (n+1)
+    
+    loop (Array.replicate size 0) 0
+
+
+
+  #eval get_collatz_chain_length 20
 
   partial def run (_: Unit): Output :=
-    let natural_under_1000000 := natural.take_atmost 1000000
-
-    let max_type := Nat × Nat -- index × value
-    let m := natural_under_1000000.reduce ((λ m j =>
-      let (_, v) := m
-      let l := get_collatz_chain_length j
-      if l > v then
-        some (j, l)
-      else
-        some m
-    ): max_type → Nat → Option max_type) (0, 0)
-
-    let (i, _) := m
-    Output.Nat i
+    Output.Nat 0
 
 end P14

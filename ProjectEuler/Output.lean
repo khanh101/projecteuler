@@ -3,6 +3,7 @@ inductive Output where
   | Int: Int → Output
   | Str: String → Output
 
+
 def Output.repr (o: Output): String :=
   match o with
     | Output.Nat o => o.repr

@@ -9,7 +9,6 @@ import ProjectEuler.P10
 import ProjectEuler.P14
 
 
-
 def run (n: Nat): Output :=
   match n with
     | 1 => P1.run ()

@@ -29,7 +29,7 @@ namespace P14
           let m := if (n % 2) == 0 then n / 2 else 3 * n + 1
           let (a, l) := write a m
           (a.set! n (l+1), l+1)
-        
+
     let rec loop (a: Array Nat) (n: Nat): Array Nat :=
       if n ≥ a.size then
         a

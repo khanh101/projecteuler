@@ -91,23 +91,6 @@ partial def Iterator.take_atmost (i: Iterator α β) (n: Nat): Iterator ((Iterat
 
 
 
-def Iterator.map (i: Iterator α β) (f: β → γ): Iterator α γ :=
-  let next (s: α): Option (α × γ) :=
-    match i._next s with
-      | some (s1, b) => some (s1, f b)
-      | none => none
-  {_next := next, _state := i._state}
-
-partial def Iterator.filter (i: Iterator α β) (f: β → Bool): Iterator α β :=
-  let rec loop (s: α): Option (α × β) :=
-    match i._next s with
-      | some (s1, b) =>
-        if (f b)
-          then some (s1, b)
-          else loop s1
-      | none => none
-  {_next := loop, _state := i._state}
-
 partial def Iterator.fold (i: Iterator α β) (f: γ → β → Option γ) (a: γ): Iterator (γ × Iterator α β) γ :=
   let state_type := γ × Iterator α β
   let rec loop (s: state_type): Option (state_type × γ) :=
@@ -144,6 +127,23 @@ partial def Iterator.flat_map (i: Iterator α β) (f: β → Iterator γ δ): It
             loop ({_next := i._next, _state := s1}, i2)
           | none => none
   {_next := loop, _state := (i, none)}
+
+def Iterator.map (i: Iterator α β) (f: β → γ): Iterator α γ :=
+  let next (s: α): Option (α × γ) :=
+    match i._next s with
+      | some (s1, b) => some (s1, f b)
+      | none => none
+  {_next := next, _state := i._state}
+
+partial def Iterator.filter (i: Iterator α β) (f: β → Bool): Iterator α β :=
+  let rec loop (s: α): Option (α × β) :=
+    match i._next s with
+      | some (s1, b) =>
+        if (f b)
+          then some (s1, b)
+          else loop s1
+      | none => none
+  {_next := loop, _state := i._state}
 
 
   namespace test

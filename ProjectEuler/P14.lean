@@ -8,14 +8,14 @@ namespace P14
   -- definition of collatz sequence - for reference
   def collatz (n: Nat): Iterator Nat Nat :=
     let next (n: Nat): Option (Nat × Nat) :=
-      if n == 1 then none else
-      if (n % 2) == 0 then
-        let m := n / 2
-        some (m, m)
+      if n ≤ 1 then
+        none
       else
-        let m := 3 * n + 1
-        some (m, m)
+      let m := if (n % 2) == 0 then n / 2 else 3 * n + 1
+      some (m, m)
     make_iterator next n
+  
+  #eval (collatz 13).array
 
   -- get the collatz chain length of all starting values ≤ size
   -- dynamic programming
@@ -40,7 +40,7 @@ namespace P14
     
     loop (Array.replicate size 0) 0
 
-  #eval (get_collatz_chain_length 14).mapIdx (λ i v => (i, v))
+  #eval get_collatz_chain_length 14
 
   partial def run (_: Unit): Output :=
     let a: Array Nat := (get_collatz_chain_length 1000000)

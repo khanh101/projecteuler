@@ -27,7 +27,7 @@ namespace P14
         if n ≤ 1 then (a.set! n 1, 1) else
         let m := if (n % 2) == 0 then n / 2 else 3 * n + 1
         let (a, l) := write a m
-        (a.set! n l+1, l+1)
+        (a.set! n (l+1), l+1)
         
     let rec loop (a: Array Nat) (n: Nat): Array Nat :=
       if n ≥ a.size then a else
@@ -36,9 +36,11 @@ namespace P14
     
     loop (Array.replicate size 0) 0
 
-  #eval get_collatz_chain_length 20
+  #eval get_collatz_chain_length 14
 
   partial def run (_: Unit): Output :=
+    let a: Array Nat := get_collatz_chain_length 1000000
+    let a: Array (Nat × Nat) := a.map 
     Output.Nat 0
 
 end P14

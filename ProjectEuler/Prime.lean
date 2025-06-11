@@ -4,31 +4,22 @@ namespace Prime
 
   open Iterator
 
-  -- prime test for c >= 3
-  private partial def odd_prime_test (c: Nat): Bool :=
-    let rec loop (m: Nat): Bool :=
-      if m * m > c then true else
-      if c % m == 0 then false else
-        loop (m+2)
+  -- odd_non_unit : odd numbers but not a unit 3, 5, 7, 9, ...
+  private def odd_non_unit := natural.map ((λ n => 2*n + 3): Nat → Nat)
 
-    loop 3
+  -- odd_prime_test : give n odd and n > 1, prime test
+  private def odd_prime_test (n: Nat): Bool :=
+    0 == odd_non_unit.reduce ((λ (num_factors: Nat) (m: Nat) =>
+      if num_factors > 0 then none else
+      if m * m > n then none else
+      if n % m == 0 then
+        some (num_factors + 1)
+      else
+        some num_factors
+    ): Nat → Nat → Option Nat) 0
 
-  private partial def next_odd_prime (c: Nat): Nat :=
-    if odd_prime_test c then c else
-      next_odd_prime (c+2)
+  def prime := (odd_non_unit.filter odd_prime_test).insert [2]
 
-
-  partial def prime :=
-    let prime_ge3: Iterator Nat Nat :=
-      let last_prime: Nat := 3
-      let next (last_prime: Nat): Option (Nat × Nat) :=
-        let next_prime := next_odd_prime (last_prime + 2)
-        some (next_prime, next_prime)
-
-      make_iterator next last_prime
-
-    prime_ge3.insert [2, 3]
-
-  #eval (prime.take_atmost 10).array -- should be 10 fibonacci numbers
+  #eval (prime.take_atmost 10).array -- should be 10 prime numbers
 
 end Prime
